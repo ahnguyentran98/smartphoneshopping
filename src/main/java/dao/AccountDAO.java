@@ -9,6 +9,7 @@ import java.util.List;
 
 import context.DBContext;
 import model.Account;
+import model.PasswordEncrypt;
 
 public class AccountDAO {
 
@@ -64,7 +65,7 @@ public class AccountDAO {
 		return flag;
 	}
 
-	// signin for customer
+	// signup for customer
 	public void signInCus(Account account) {
 		try {
 			// connect to database
@@ -73,9 +74,15 @@ public class AccountDAO {
 			// query
 			PreparedStatement stmt1 = conn.prepareStatement(
 					"INSERT INTO dbo.Account (user_mail,password,account_role,user_name,user_address,user_phone) values (?,?, ?, ?, ?, ?)");
+
+			// encrypt password
+			String pass = account.getPwd();
+			byte[] pass1 = PasswordEncrypt.getSHA(pass);
+			String password = PasswordEncrypt.toHexString(pass1);
+
 			// set user info
 			stmt1.setString(1, account.getUsr());
-			stmt1.setString(2, account.getPwd());
+			stmt1.setString(2, password);
 			stmt1.setInt(3, account.getRole());
 			stmt1.setString(4, account.getName());
 			stmt1.setString(5, account.getAddress());
